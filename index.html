@@ -10,7 +10,7 @@
 /* LINE 內建瀏覽器開不了即時相機：自動改用手機預設瀏覽器開啟 */
 (function(){var u=navigator.userAgent||"";if(/\bLine\//i.test(u)&&location.search.indexOf("openExternalBrowser")<0){var s=location.search?location.search+"&":"?";location.replace(location.pathname+s+"openExternalBrowser=1"+location.hash);}})();
 </script>
-<link rel="stylesheet" href="booth.css">
+<link rel="stylesheet" href="booth.css?v=145f52e5">
 </head>
 <body>
 <div class="booth light at-home" id="booth">
@@ -110,6 +110,10 @@
       <div class="flash" id="flash"></div>
       <div class="busy" id="busy" hidden>處理中…</div>
     </div>
+    <div class="lens" id="lens" role="radiogroup" aria-label="鏡頭倍率" hidden>
+      <button type="button" role="radio" data-lens="wide" aria-checked="false">0.5×</button>
+      <button type="button" role="radio" data-lens="normal" aria-checked="true">1×</button>
+    </div>
     <div class="picker">
       <div class="tabs" role="tablist" aria-label="效果">
         <button type="button" role="tab" id="tabFrame" aria-selected="true" aria-controls="frameChips">相框</button>
@@ -175,10 +179,10 @@
   <input type="file" id="fileCam" accept="image/*" capture="user" hidden>
 </div>
 
-<script src="config.js"></script>
-<script src="words.js"></script>
-<script src="render.js"></script>
-<script src="booth.js"></script>
-<script type="module" src="store-firebase.js"></script>
+<script src="config.js?v=7c39f577"></script>
+<script src="words.js?v=8080ff9b"></script>
+<script src="render.js?v=ffd4219c"></script>
+<script src="booth.js?v=8d09680f"></script>
+<script type="module" src="store-firebase.js?v=0e5ecce3"></script>
 </body>
 </html>

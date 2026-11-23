@@ -22,6 +22,7 @@
   // 鏡頭選擇（前鏡頭自拍／後鏡頭幫拍）
   function setFacing(f) {
     S.facing = f;
+    if (f === "user") S.lensWide = false;
     document.querySelectorAll(".cam-pick [data-facing]").forEach(b => b.setAttribute("aria-checked", String(b.dataset.facing === f)));
     $("fileCam").setAttribute("capture", f);
     $("flipLbl").textContent = f === "user" ? "換後鏡頭" : "換前鏡頭";
@@ -160,6 +161,7 @@
     if (!still) { S.adjusting = false; $("editCv").hidden = true; $("adjHint").hidden = true; $("stage").classList.remove("adjusting"); }
     $("adjBar").hidden = !still;
     $("tabSticker").hidden = !still;
+    if (mode !== "live") $("lens").hidden = true; else if (typeof syncLens === "function") syncLens();
     if (!still && !$("stkPanel").hidden) setTab("frame");
     for (const id of ["video", "tint", "vig"]) $(id).hidden = still;
     $("studioTitle").textContent = still ? "完成" : (S.facing === "user" ? "前鏡頭" : "後鏡頭");
@@ -460,13 +462,23 @@
   function stopCam() {
     if (S.stream) { S.stream.getTracks().forEach(t => t.stop()); S.stream = null; }
   }
+  // 取景：用感光元件完整的 4:3 畫面（不先裁成正方形），自拍能拍進更多人
+  function camConstraints(deviceId) {
+    const v = { width: { ideal: 1920 }, height: { ideal: 1440 }, resizeMode: { ideal: "none" } };
+    if (deviceId) v.deviceId = { exact: deviceId }; else v.facingMode = S.facing;
+    return { video: v, audio: false };
+  }
   async function startCam(fallbackFacing) {
     stopCam();
     const v = $("video");
+    const wantWide = S.facing === "environment" && S.lensWide && S.wideCam && S.wideCam.kind === "device";
     try {
-      S.stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: S.facing, width: { ideal: 1440 }, height: { ideal: 1440 } }, audio: false
-      });
+      try {
+        S.stream = await navigator.mediaDevices.getUserMedia(camConstraints(wantWide ? S.wideCam.id : null));
+      } catch (e1) {
+        if (wantWide) { S.lensWide = false; S.stream = await navigator.mediaDevices.getUserMedia(camConstraints()); }
+        else throw e1;
+      }
     } catch (e) {
       console.warn(e);
       if (fallbackFacing) {           // 切換鏡頭失敗（例如電腦沒有後鏡頭）：退回原本的鏡頭
@@ -485,8 +497,52 @@
     v.srcObject = S.stream;
     v.classList.toggle("mirror", S.facing === "user");
     try { await v.play(); } catch (e) {}
+    await detectWide();
     return true;
   }
+
+  // ---------- 後鏡頭超廣角（0.5×）：手機有開放才顯示 ----------
+  // 兩種開放方式：① 超廣角是另一顆獨立鏡頭（iPhone 等，名稱含 Ultra Wide／超廣角）
+  //               ② 同一顆鏡頭可以縮放到 1 倍以下（部分 Android）
+  S.wideCam = null; S.lensWide = false;
+  async function detectWide() {
+    S.wideCam = null;
+    const track = S.stream && S.stream.getVideoTracks()[0];
+    if (S.facing !== "environment" || !track) { syncLens(); return; }
+    try {
+      const cap = track.getCapabilities ? track.getCapabilities() : {};
+      if (cap.zoom && cap.zoom.min < 1) {
+        S.wideCam = { kind: "zoom", min: cap.zoom.min };
+        if (S.lensWide) await setZoom(cap.zoom.min);
+      }
+    } catch (e) {}
+    if (!S.wideCam) {
+      try {
+        const list = await navigator.mediaDevices.enumerateDevices();
+        const uw = list.find(d => d.kind === "videoinput" && /ultra\s*wide|ultrawide|超廣角|超广角|0\.5/i.test(d.label) && !/front|前/i.test(d.label));
+        if (uw && uw.deviceId) S.wideCam = { kind: "device", id: uw.deviceId };
+      } catch (e) {}
+    }
+    if (!S.wideCam) S.lensWide = false;
+    syncLens();
+  }
+  async function setZoom(z) {
+    const track = S.stream && S.stream.getVideoTracks()[0];
+    if (!track) return;
+    try { await track.applyConstraints({ advanced: [{ zoom: z }] }); } catch (e) {}
+  }
+  function syncLens() {
+    const show = S.mode === "live" && S.facing === "environment" && !!S.wideCam;
+    $("lens").hidden = !show;
+    document.querySelectorAll("#lens [data-lens]").forEach(b => b.setAttribute("aria-checked", String((b.dataset.lens === "wide") === S.lensWide)));
+  }
+  document.querySelectorAll("#lens [data-lens]").forEach(b => b.addEventListener("click", async () => {
+    const wide = b.dataset.lens === "wide";
+    if (wide === S.lensWide || !S.wideCam) return;
+    S.lensWide = wide; syncLens();
+    if (S.wideCam.kind === "zoom") await setZoom(wide ? S.wideCam.min : 1);
+    else await startCam();
+  }));
 
   async function goLive(keepShots) {
     if (!keepShots) resetShots();

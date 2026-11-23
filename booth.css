@@ -319,3 +319,10 @@ body { margin: 0; background: var(--pb-red-dark); color: var(--pb-paper); font-f
 .stk-rot { right: -15px; bottom: -15px; background: #fff; border: 3px solid #d6321f; cursor: nwse-resize; }
 .stk-rot::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; border: 2px solid #d6321f; border-left-color: transparent; }
 .stage.stk-editing img.result { -webkit-touch-callout: none; }
+
+/* 後鏡頭廣角切換（只有手機開放超廣角時才出現） */
+.lens { align-self: center; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: #f3dcd5; margin-top: -2px; }
+.lens[hidden] { display: none; }
+.lens button { min-width: 56px; min-height: 36px; border: 0; border-radius: 999px; background: transparent; color: #8a3a26; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.lens button[aria-checked="true"] { background: #fff; color: #d6321f; box-shadow: 0 1px 4px rgba(170, 60, 40, .18); }
+.lens button:focus-visible { outline: 2px solid #d6321f; outline-offset: 2px; }
