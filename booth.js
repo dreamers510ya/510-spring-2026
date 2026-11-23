@@ -600,7 +600,7 @@
     if (S.stkEditing || !$("stkPanel").hidden) { S.stkEditing = false; setTab("frame"); }
     S.view = { zoom: 1, dx: 0, dy: 0 }; S.adjusting = false;
     updateGridUI();
-    $("btnUpload").disabled = false; $("btnUpload").textContent = "上傳到大螢幕";
+    $("btnUpload").disabled = false; $("btnUpload").textContent = "立馬上傳加入大合照";
     $("upConfirm").hidden = true; $("upRow").hidden = false;
     setStatus("");
     show("still");
@@ -716,7 +716,16 @@
     await R.compose(cv, S.source, frameDef(), filter(), cfg, isGrid() ? {} : S.view);
     if (token !== S.renderToken) return;
     S.baseCanvas = cv;
+    paintUpPreview();
     await showStill(token);
+  }
+  // 上傳區的大螢幕預覽：和實際上傳的縮圖完全相同（照片本身，不含相框與貼紙）
+  function paintUpPreview() {
+    try {
+      const need = isGrid() && missing() !== -1;
+      const src = isGrid() ? S.shots : firstShot();
+      $("upPreview").src = need || !src ? "" : R.thumbnail(src, filter(), isGrid() ? {} : S.view, 200);
+    } catch (e) {}
   }
   // 顯示成品：編輯貼紙時只放底圖（貼紙在上層可拖曳），其他時候把貼紙合成進照片，長按存檔也有貼紙
   async function showStill(token) {
@@ -816,11 +825,11 @@
       if (!ok) throw new Error(store.notReadyMsg || "上傳功能尚未啟用");
       if (S.adjusting) await endAdjust();
       const img = R.thumbnail(isGrid() ? S.shots : firstShot(), filter(), isGrid() ? {} : S.view);
-      const name = $("nameInput").value.trim().slice(0, 12);
+      const name = $("nameInput").value.trim().slice(0, 16);
       await withTimeout(store.upload({ img, name }), 20000);
       S.uploaded = true;
       btn.textContent = "已上傳";
-      setStatus("上傳成功！照片已出現在大螢幕，抬頭找找你在哪裡。", "ok");
+      setStatus("上傳成功！抬頭找找你！", "ok");
     } catch (e) {
       btn.disabled = false; btn.textContent = "再試一次";
       setStatus("上傳沒有成功：" + (e && e.message ? e.message : "請檢查網路後再試一次"), "err");

@@ -10,7 +10,7 @@
 /* LINE 內建瀏覽器開不了即時相機：自動改用手機預設瀏覽器開啟 */
 (function(){var u=navigator.userAgent||"";if(/\bLine\//i.test(u)&&location.search.indexOf("openExternalBrowser")<0){var s=location.search?location.search+"&":"?";location.replace(location.pathname+s+"openExternalBrowser=1"+location.hash);}})();
 </script>
-<link rel="stylesheet" href="booth.css?v=145f52e5">
+<link rel="stylesheet" href="booth.css?v=b9e48df9">
 </head>
 <body>
 <div class="booth light at-home" id="booth">
@@ -40,7 +40,7 @@
     <ol class="steps">
       <li><b>選相框</b><span>8 款主題相框</span></li>
       <li><b>分享</b><span>存到手機或傳 LINE、IG</span></li>
-      <li><b>上傳</b><span>大螢幕即時出現</span></li>
+      <li><b>上傳</b><span>加入大合照</span></li>
     </ol>
     <p class="hint" id="homeHint"></p>
   </section>
@@ -155,16 +155,16 @@
       </div>
       <div class="upload-card">
         <div class="cast-note">
-          <span class="cast-ic" aria-hidden="true"></span>
-          <p><b>上傳後會立即投影在現場大螢幕</b>全場都看得到照片和署名，請確認照片沒問題再上傳。</p>
+          <figure class="up-pv"><img id="upPreview" alt="大螢幕上顯示的照片預覽"><figcaption>大螢幕預覽顯示</figcaption></figure>
+          <p><b>把笑容放上大螢幕！</b>和微型社福夥伴一起拼成<span class="nw">「團圓」大合照</span>吧！</p>
         </div>
-        <label for="nameInput">署名（選填，會顯示在大螢幕上）</label>
+        <label for="nameInput">單位名稱</label>
         <div class="row" id="upRow">
-          <input id="nameInput" maxlength="12" autocomplete="off" placeholder="例如：小美和家人">
-          <button class="btn gold" id="btnUpload" type="button">上傳到大螢幕</button>
+          <input id="nameInput" maxlength="16" autocomplete="off" placeholder="例如：○○協會">
+          <button class="btn gold" id="btnUpload" type="button">立馬上傳加入大合照</button>
         </div>
         <div class="up-confirm" id="upConfirm" hidden>
-          <p>確定要投影到大螢幕嗎？</p>
+          <p>確定投影到大螢幕？</p>
           <div class="row">
             <button class="btn gold" id="btnUploadYes" type="button">確定上傳</button>
             <button class="btn ghost" id="btnUploadNo" type="button">再想想</button>
@@ -179,10 +179,10 @@
   <input type="file" id="fileCam" accept="image/*" capture="user" hidden>
 </div>
 
-<script src="config.js?v=7c39f577"></script>
+<script src="config.js?v=35b8f422"></script>
 <script src="words.js?v=8080ff9b"></script>
 <script src="render.js?v=ffd4219c"></script>
-<script src="booth.js?v=8d09680f"></script>
+<script src="booth.js?v=742e37e6"></script>
 <script type="module" src="store-firebase.js?v=0e5ecce3"></script>
 </body>
 </html>

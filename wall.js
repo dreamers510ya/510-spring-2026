@@ -179,7 +179,8 @@
     while (tiles.length < C) {
       const t = document.createElement("div"); t.className = "t";
       const im = document.createElement("img"); im.alt = ""; im.decoding = "async";
-      t.appendChild(im); board.appendChild(t); tiles.push(t);
+      const nm = document.createElement("span"); nm.className = "n";
+      t.append(im, nm); board.appendChild(t); tiles.push(t);
     }
     while (tiles.length > C) tiles.pop().remove();
     for (let j = 0; j < C; j++) {
@@ -190,7 +191,12 @@
       t.classList.toggle("new", !!(newIds && newIds.has(p.id) && j < N));
       const src = (t.dataset.hi === "1" ? p.full : (p.mini || p.full));
       if (t.firstChild.getAttribute("src") !== src) t.firstChild.src = src;
+      const label = j < N ? (p.name || "") : "";   // 補位用的重複格不顯示名字
+      if (t.lastChild.textContent !== label) t.lastChild.textContent = label;
+      t.lastChild.hidden = !label;
     }
+    // 格子夠大（照片不多時）直接在每張照片下方顯示單位名稱；照片多、格子小時改由鏡頭巡覽放大顯示
+    board.classList.toggle("named", layout.tw >= 110);
   }
 
   // ---------- 鏡頭巡覽 ----------
@@ -200,7 +206,7 @@
     tourHi = [];
   }
   function zoomOut() {
-    $("wBoard").style.transform = ""; $("wCaption").hidden = true; clearHi();
+    $("wBoard").style.transform = ""; $("wBoard").classList.remove("zoomed"); $("wCaption").hidden = true; clearHi();
   }
   function stopTour() { clearTimeout(tourTimer); zoomOut(); }
   function startTour() {
@@ -209,7 +215,7 @@
     const step = zoomIn => {
       if (!set.tour || set.mode !== "mosaic") return;
       const vis = visible();
-      if (!zoomIn || vis.length < 12 || !layout || spotActive) {
+      if (!zoomIn || vis.length < 3 || !layout || spotActive) {
         zoomOut();
         tourTimer = setTimeout(() => step(true), 6000);
         return;
@@ -230,11 +236,9 @@
         }
       }
       $("wBoard").style.transform = `translate(${W / 2 - cx * k}px, ${H / 2 - cy * k}px) scale(${k})`;
-      const p = vis[j];
-      setTimeout(() => {
-        if (set.mode !== "mosaic" || !set.tour) return;
-        if (p && p.name && set.names) { $("wCaption").textContent = p.name; $("wCaption").hidden = false; }
-      }, 3400);
+      $("wBoard").style.setProperty("--zlab", (Math.max(16, Math.min(24, layout.tw * k * .1)) / k) + "px");
+      $("wBoard").classList.add("zoomed");
+      // 放大區域裡每張照片下方都會顯示單位名稱，不再另外疊一條字幕
       tourTimer = setTimeout(() => { $("wCaption").hidden = true; step(false); }, 8500);
     };
     tourTimer = setTimeout(() => step(true), 4000);
@@ -523,6 +527,7 @@
     const hiddenChanged = nh.size !== hidden.size || [...nh].some(id => !hidden.has(id));
     hidden = nh;
     $("wall").classList.toggle("no-names", !set.names);
+    if (!set.names) $("wCaption").hidden = true;
     if (prev.qrUrl !== set.qrUrl) renderQr();
     if (prev.shape !== set.shape || prev.shapeText !== set.shapeText || hiddenChanged) layout = null;
     const demo = Math.max(0, Math.min(1200, Number(c.demo) || 0));

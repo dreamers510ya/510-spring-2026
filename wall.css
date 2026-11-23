@@ -55,6 +55,12 @@
 }
 .w-board .t img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 1px; background: rgba(0,0,0,.35); }
 .w-board .t.echo { opacity: .78; }
+.w-board .t .n { display: none; position: absolute; left: var(--pad, 1px); right: var(--pad, 1px); bottom: var(--pad, 1px); padding: 1.2vh .4vw .5vh;
+  font-size: max(12px, calc(var(--tw) * .085)); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: linear-gradient(180deg, transparent, rgba(36,3,10,.85)); color: var(--w-gold-hi); border-radius: 0 0 1px 1px; }
+.wall:not(.no-names) .w-board.named:not(.zoomed) .t .n:not([hidden]) { display: block; }
+/* 鏡頭巡覽放大時：放大區域裡的每張照片都顯示單位名稱（字級依放大倍率換算，投影上約 20px） */
+.wall:not(.no-names) .w-board.zoomed .t[data-hi="1"] .n:not([hidden]) { display: block; font-size: var(--zlab, 10px); padding: calc(var(--zlab, 10px) * .9) calc(var(--zlab, 10px) * .3) calc(var(--zlab, 10px) * .3); }
 .w-board .t.new img { animation: wPop 1.4s ease-out; }
 @keyframes wPop { 0% { filter: brightness(2.2); } 100% { filter: none; } }
 
