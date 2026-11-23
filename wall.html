@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6e0a19">
+<title>一起夢想 作伙迎春團圓｜大螢幕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap">
+<link rel="stylesheet" href="booth.css">
+<link rel="stylesheet" href="wall.css">
+</head>
+<body>
+<div class="wall" id="wall">
+  <header class="w-head">
+    <h1 class="w-brand"><img class="w-kv" src="assets/title_cream.webp" alt="2026 微型社福饗宴・一起夢想 作伙迎春團圓"></h1>
+    <div class="w-count" aria-live="polite"><b id="wCount">0</b><span>位夥伴已入鏡</span></div>
+  </header>
+
+  <main class="w-stage" id="wStage">
+    <div class="w-pages" id="wPages"></div>
+    <div class="w-mosaic" id="wMosaic" hidden><div class="w-board" id="wBoard"></div></div>
+    <div class="w-empty" id="wEmpty">
+      <p class="big">大合照等你入鏡</p>
+      <p>用手機掃描 QR code，拍下第一張照片</p>
+    </div>
+    <div class="w-cloud" id="wCloud" hidden>
+      <div class="w-cq-wrap"><span class="w-cq-tag">現場提問</span><h2 class="w-cq" id="wCq"></h2></div>
+      <div class="w-cwords" id="wCwords"></div>
+      <p class="w-cwait" id="wCwait">拿起手機掃描 QR code，在首頁點「現場提問」回答</p>
+      <p class="w-cn"><b id="wCn">0</b> 則回應</p>
+    </div>
+    <div class="w-caption" id="wCaption" hidden></div>
+  </main>
+
+  <aside class="w-qr" id="wQr" hidden>
+    <div class="w-qr-img" id="wQrImg"></div>
+    <p id="wQrText">掃碼自拍<br>一起入鏡</p>
+  </aside>
+
+  <div class="w-spot" id="wSpot" hidden>
+    <figure>
+      <img id="wSpotImg" alt="">
+      <figcaption><span class="w-hello">歡迎入鏡</span><b id="wSpotName"></b></figcaption>
+    </figure>
+  </div>
+
+  <div class="w-slides" id="wSlides" hidden>
+    <img id="wSlA" alt=""><img id="wSlB" alt="">
+    <p class="w-sl-empty" id="wSlEmpty" hidden>簡報準備中</p>
+  </div>
+
+  <div class="w-start" id="wStart">
+    <div class="w-start-card">
+      <img class="w-start-kv" src="assets/title_cream.webp" alt="2026 微型社福饗宴・一起夢想 作伙迎春團圓">
+      <p class="w-start-h">投影畫面</p>
+      <p class="w-start-status" id="wStartStatus">連線中…</p>
+      <form class="w-login" id="wLogin" hidden novalidate>
+        <p class="w-login-h">請用控台帳號登入，照片只有登入後才看得到</p>
+        <div class="w-login-row">
+          <label class="sr" for="wAcct">控台帳號</label>
+          <input id="wAcct" type="text" autocomplete="username" spellcheck="false" autocapitalize="off" placeholder="控台帳號">
+          <label class="sr" for="wPw">密碼</label>
+          <input id="wPw" type="password" autocomplete="current-password" placeholder="密碼">
+          <button type="submit" class="w-login-btn" id="wLoginBtn">登入</button>
+        </div>
+        <p class="w-login-err" id="wLoginErr" role="alert"></p>
+      </form>
+      <button type="button" class="w-start-btn" id="wStartBtn" hidden>開始投影（全螢幕）</button>
+      <p class="w-start-note">開始後畫面上不會出現任何按鈕，請用「主持人控制台」切換畫面與管理照片。<br>要結束全螢幕請按 Esc。</p>
+    </div>
+  </div>
+  <p class="w-err" id="wErr" hidden></p>
+</div>
+
+<script src="config.js"></script>
+<script>window.PB_CONFIG.derivedBoothUrl = new URL("./", location.href).href;</script>
+<script src="qrcode.js"></script>
+<script src="words.js"></script>
+<script src="render.js"></script>
+<script src="wall.js"></script>
+<script type="module" src="store-firebase.js"></script>
+<script>window.PBWall.start();</script>
+</body>
+</html>

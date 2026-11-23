@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6e0a19">
+<title>主持人控制台｜作伙迎春團圓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap">
+<meta name="robots" content="noindex">
+<style>[hidden]{display:none!important}html,body{height:100%;margin:0}</style>
+<link rel="stylesheet" href="console.css">
+</head>
+<body>
+<div class="cc" id="cc">
+  <header class="cc-top">
+    <div class="cc-brand">
+      <span class="cc-mark" aria-hidden="true">春</span>
+      <div>
+        <h1>主持人控制台</h1>
+        <p id="ccEvent">2026 微型社福饗宴</p>
+      </div>
+    </div>
+    <div class="cc-stats" aria-live="polite">
+      <div class="cc-stat"><span class="dot" id="ccDot"></span><b id="ccOnline">大螢幕未連線</b><small id="ccOnlineSub">請在投影電腦開啟投影畫面</small></div>
+      <div class="cc-stat"><b id="ccCount">0</b><small>位已入鏡</small></div>
+      <div class="cc-stat"><b id="ccLast">—</b><small>最新上傳</small></div>
+    </div>
+    <div class="cc-user"><span id="ccUser"></span><button type="button" class="cc-link" id="ccSignOut" hidden>登出</button></div>
+  </header>
+
+  <section class="cc-login" id="ccLogin" hidden>
+    <h2>控台人員登入</h2>
+    <p id="ccLoginMsg">只有控台人員可以切換大螢幕、管理照片與簡報。</p>
+    <form class="cc-login-form" id="ccLoginForm" novalidate>
+      <label for="ccAcct">控台帳號</label>
+      <input id="ccAcct" type="text" autocomplete="username" spellcheck="false" autocapitalize="off" autocorrect="off">
+      <label for="ccPw">密碼</label>
+      <div class="cc-pw">
+        <input id="ccPw" type="password" autocomplete="current-password">
+        <button type="button" class="cc-link" id="ccPwShow" aria-pressed="false">顯示</button>
+      </div>
+      <button type="submit" class="cc-btn primary" id="ccSignIn">登入</button>
+      <p class="cc-login-err" id="ccLoginErr" role="alert"></p>
+    </form>
+    <p class="cc-hint">這台電腦會保持登入，活動結束請按右上角「登出」。</p>
+  </section>
+
+  <main class="cc-main" id="ccMain" hidden>
+    <div class="cc-col">
+      <section class="cc-card">
+        <div class="cc-card-h"><h2>大螢幕畫面</h2><span class="cc-hint">按一下立即切換</span></div>
+        <div class="cc-scenes" role="radiogroup" aria-label="大螢幕畫面">
+          <button type="button" class="cc-scene" data-scene="kv" role="radio">
+            <span class="cc-thumb t-kv" aria-hidden="true"><i></i></span>
+            <b>主視覺</b><small>開場前待機・緊急時蓋住畫面</small><em>投影中</em>
+          </button>
+          <button type="button" class="cc-scene" data-scene="pages" role="radio">
+            <span class="cc-thumb t-pages" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <b>輪播牆</b><small>每頁 40 張大照片，自動換頁</small><em>投影中</em>
+          </button>
+          <button type="button" class="cc-scene" data-scene="mosaic" role="radio">
+            <span class="cc-thumb t-mosaic" aria-hidden="true"></span>
+            <b>大合照</b><small>全部照片拼成一面牆</small><em>投影中</em>
+          </button>
+          <button type="button" class="cc-scene" data-scene="slides" role="radio">
+            <span class="cc-thumb t-slides" aria-hidden="true"><i></i></span>
+            <b>簡報</b><small>上傳的 PDF 簡報，在下方換頁</small><em>投影中</em>
+          </button>
+          <button type="button" class="cc-scene" data-scene="cloud" role="radio">
+            <span class="cc-thumb t-cloud" aria-hidden="true"><i style="font-size:30px">夢想</i><i>團圓</i><i>感謝</i></span>
+            <b>文字雲</b><small>來賓回答現場提問，即時長成文字雲</small><em>投影中</em>
+          </button>
+        </div>
+      </section>
+
+      <section class="cc-card" id="ccSlidesCard">
+        <div class="cc-card-h"><h2>簡報</h2><span class="cc-hint" id="ccSlState"></span></div>
+        <div class="cc-decks" id="ccDecks" role="radiogroup" aria-label="選擇簡報"></div>
+        <div class="cc-sl-body" id="ccSlBody" hidden>
+          <div class="cc-sl-now">
+            <figure class="cc-sl-pv"><img id="ccSlCur" alt="目前這一頁"><figcaption id="ccSlCurCap">大螢幕這一頁</figcaption></figure>
+            <figure class="cc-sl-pv next"><img id="ccSlNext" alt="下一頁"><figcaption id="ccSlNextCap">下一頁</figcaption></figure>
+          </div>
+          <div class="cc-sl-nav">
+            <button type="button" class="cc-btn" id="ccSlPrev">‹ 上一頁</button>
+            <b id="ccSlPage" aria-live="polite">1 / 1</b>
+            <button type="button" class="cc-btn primary" id="ccSlNextBtn">下一頁 ›</button>
+          </div>
+          <button type="button" class="cc-btn primary cc-sl-show" id="ccSlShow">把簡報投到大螢幕</button>
+          <p class="cc-hint">投影簡報時，鍵盤 ← → 或空白鍵也能換頁；點下方縮圖直接跳頁</p>
+          <div class="cc-sl-grid" id="ccSlGrid"></div>
+        </div>
+        <div class="cc-row">
+          <label class="cc-btn small" for="ccSlFile" id="ccSlUpLbl">＋ 上傳簡報（PDF 或圖片）</label>
+          <input type="file" id="ccSlFile" accept="application/pdf,.pdf,image/*" multiple hidden>
+          <span class="cc-hint" id="ccSlProg" role="status"></span>
+        </div>
+        <p class="cc-empty" id="ccSlEmpty">還沒有簡報。把 PowerPoint、Google 簡報、Canva 匯出成 PDF 後上傳，每一頁會變成一張投影片；可上傳多份（開場、頒獎、致詞…）。</p>
+      </section>
+
+      <section class="cc-card" id="ccMosaicCard">
+        <div class="cc-card-h"><h2>大合照設定</h2><span class="cc-hint">切到「大合照」時生效</span></div>
+        <div class="cc-row">
+          <span class="cc-label">形狀</span>
+          <div class="cc-seg" role="radiogroup" aria-label="大合照形狀">
+            <button type="button" role="radio" data-shape="rect">滿版</button>
+            <button type="button" role="radio" data-shape="heart">愛心</button>
+            <button type="button" role="radio" data-shape="text">文字</button>
+          </div>
+          <div class="cc-text" id="ccTextWrap" hidden>
+            <label for="ccShapeText" class="sr">拼出的字</label>
+            <input id="ccShapeText" maxlength="3" placeholder="夢">
+            <button type="button" class="cc-btn small" id="ccShapeTextApply">套用</button>
+          </div>
+        </div>
+        <div class="cc-row">
+          <label class="cc-switch"><input type="checkbox" id="ccTour"><span></span>鏡頭巡覽<small>自動放大照片，讓每張都看得清楚</small></label>
+        </div>
+        <div class="cc-row">
+          <label class="cc-switch"><input type="checkbox" id="ccNames"><span></span>顯示署名<small>新照片進場與巡覽時顯示名字</small></label>
+        </div>
+      </section>
+
+      <section class="cc-card" id="ccCloudCard">
+        <div class="cc-card-h"><h2>文字雲</h2><span class="cc-hint" id="ccCloudState"></span></div>
+        <div class="cc-row col">
+          <label for="ccQNew" class="cc-label">新增題目</label>
+          <div class="cc-inline"><input id="ccQNew" maxlength="40" placeholder="例如：用一個詞形容今年的你"><button type="button" class="cc-btn small primary" id="ccQAdd">新增</button></div>
+        </div>
+        <ol class="cc-qlist" id="ccQList"></ol>
+        <p class="cc-empty" id="ccQEmpty">還沒有題目。新增後按「投影這題」，大螢幕會切到文字雲，來賓手機首頁也會出現作答入口。</p>
+        <div class="cc-row" id="ccOpenRow" hidden>
+          <label class="cc-switch"><input type="checkbox" id="ccCloudOpen"><span></span>開放來賓回應<small>關閉後來賓手機的作答入口會消失，大螢幕保留目前結果</small></label>
+        </div>
+        <div class="cc-words" id="ccWordsWrap" hidden>
+          <div class="cc-card-h"><h3>這題的回答</h3><span class="cc-hint">不適合的詞按「移除」，大螢幕立刻拿掉，之後同一個詞也不會再出現</span></div>
+          <ul class="cc-wlist" id="ccWList"></ul>
+          <p class="cc-empty" id="ccWEmpty">還沒有回答。</p>
+        </div>
+        <details class="cc-blocked" id="ccBlockedWrap" hidden>
+          <summary>已移除的詞 <span id="ccBlockedN">0</span></summary>
+          <ul class="cc-wlist" id="ccBList"></ul>
+        </details>
+      </section>
+
+      <details class="cc-card cc-setup" id="ccSetup">
+        <summary><h2>活動前設定</h2><span class="cc-hint">彩排用，活動中不需要打開</span></summary>
+        <div class="cc-row col">
+          <label for="ccQr" class="cc-label">大螢幕 QR code 網址</label>
+          <div class="cc-inline"><input id="ccQr" spellcheck="false" placeholder="留空＝自動使用自拍頁網址"><button type="button" class="cc-btn small" id="ccQrSave">儲存</button></div>
+        </div>
+        <div class="cc-row col">
+          <span class="cc-label">示範照片（只在大螢幕本機產生，不會存進資料庫）</span>
+          <div class="cc-inline">
+            <button type="button" class="cc-btn small" data-demo="40">加入 40 張</button>
+            <button type="button" class="cc-btn small" data-demo="1000">加到 1,000 張</button>
+            <button type="button" class="cc-btn small ghost" data-demo="0">清除示範</button>
+            <span class="cc-hint" id="ccDemoNow"></span>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <section class="cc-card cc-photos">
+      <div class="cc-card-h">
+        <h2>照片管理</h2>
+        <div class="cc-seg small" role="tablist" aria-label="照片篩選">
+          <button type="button" role="tab" data-filter="all" aria-selected="true">最新照片</button>
+          <button type="button" role="tab" data-filter="hidden" aria-selected="false">已隱藏 <span id="ccHiddenN">0</span></button>
+        </div>
+      </div>
+      <p class="cc-hint">「隱藏」立刻從大螢幕拿下，可隨時復原；「刪除」會從資料庫永久移除，無法復原。</p>
+      <button type="button" class="cc-btn small danger" id="ccDelHidden" hidden>永久刪除全部已隱藏照片</button>
+      <div class="cc-grid" id="ccGrid"></div>
+      <p class="cc-empty" id="ccEmpty">還沒有照片。來賓上傳後會出現在這裡。</p>
+      <button type="button" class="cc-btn ghost cc-more" id="ccMore" hidden>顯示更多</button>
+    </section>
+  </main>
+
+  <div class="cc-ask" id="ccAsk" role="dialog" aria-modal="true" aria-labelledby="ccAskT" hidden>
+    <div class="cc-ask-card">
+      <img id="ccAskImg" alt="" hidden>
+      <h2 id="ccAskT"></h2>
+      <p id="ccAskB"></p>
+      <div class="cc-ask-row">
+        <button type="button" class="cc-btn" id="ccAskNo">取消</button>
+        <button type="button" class="cc-btn danger" id="ccAskOk">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cc-toast" id="ccToast" role="status" hidden><span id="ccToastT"></span><button type="button" class="cc-link" id="ccToastUndo" hidden>復原</button></div>
+</div>
+
+<script src="config.js"></script>
+<script src="words.js"></script>
+<script src="console.js"></script>
+<script type="module" src="store-firebase.js"></script>
+<script>window.PBConsole.start();</script>
+</body>
+</html>

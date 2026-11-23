@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6e0a19">
+<title>一起夢想 作伙迎春團圓｜自拍</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap">
+<script>
+/* LINE 內建瀏覽器開不了即時相機：自動改用手機預設瀏覽器開啟 */
+(function(){var u=navigator.userAgent||"";if(/\bLine\//i.test(u)&&location.search.indexOf("openExternalBrowser")<0){var s=location.search?location.search+"&":"?";location.replace(location.pathname+s+"openExternalBrowser=1"+location.hash);}})();
+</script>
+<link rel="stylesheet" href="booth.css">
+</head>
+<body>
+<div class="booth light at-home" id="booth">
+  <section class="screen home" id="scrHome">
+    <header class="home-hero">
+      <h1 class="home-kv" id="homeTitle"><img src="assets/title_kv.webp" width="1387" height="509" alt="2026 微型社福饗宴・一起夢想 作伙迎春團圓"></h1>
+      <p class="home-tag">留下今天的合影</p>
+    </header>
+    <div class="home-fan" aria-hidden="true">
+      <img class="c1" src="assets/home_card1.webp" alt="">
+      <img class="c3" src="assets/home_card3.webp" alt="">
+      <img class="c2" src="assets/home_card2.webp" alt="">
+    </div>
+    <button type="button" class="q-banner" id="qBanner" hidden>
+      <span class="q-tag">現場提問</span>
+      <b id="qBannerText"></b>
+      <span class="q-go">點我回應 ›</span>
+    </button>
+    <div class="home-actions">
+      <div class="cam-pick" role="radiogroup" aria-label="選擇鏡頭">
+        <button type="button" role="radio" data-facing="user" aria-checked="true">前鏡頭<small>自拍</small></button>
+        <button type="button" role="radio" data-facing="environment" aria-checked="false">後鏡頭<small>幫朋友拍、團體照</small></button>
+      </div>
+      <button class="btn primary" id="btnStart" type="button">開始拍照</button>
+      <button class="btn ghost" id="btnAlbum" type="button">從相簿選照片</button>
+    </div>
+    <ol class="steps">
+      <li><b>選相框</b><span>8 款主題相框</span></li>
+      <li><b>分享</b><span>存到手機或傳 LINE、IG</span></li>
+      <li><b>上傳</b><span>大螢幕即時出現</span></li>
+    </ol>
+    <p class="hint" id="homeHint"></p>
+  </section>
+
+  <section class="screen answer" id="scrAnswer" hidden>
+    <div class="topbar">
+      <button class="icon" id="btnAnsBack" type="button">‹ 返回</button>
+      <span class="ttl">現場提問</span>
+      <span class="icon" aria-hidden="true"></span>
+    </div>
+    <div class="ans-card">
+      <p class="ans-label">一起回答，答案會變成大螢幕上的文字雲</p>
+      <h2 class="ans-q" id="ansQ"></h2>
+      <label class="sr" for="ansInput">你的回答</label>
+      <input id="ansInput" maxlength="8" autocomplete="off" enterkeyhint="send" placeholder="輸入一個詞（8 個字以內）">
+      <button class="btn primary" id="btnAnsSend" type="button">送出</button>
+      <p class="status" id="ansStatus" role="status"></p>
+      <p class="ans-note">匿名回答・每題最多 3 次・同一個詞越多人說，字就越大</p>
+    </div>
+    <button class="btn ghost" id="btnAnsPhoto" type="button">去拍照</button>
+  </section>
+
+  <section class="screen pick" id="scrPick" hidden>
+    <div class="topbar">
+      <button class="icon" id="btnPickBack" type="button">‹ 返回</button>
+      <span class="ttl">選擇相框</span>
+      <span class="icon" aria-hidden="true"></span>
+    </div>
+    <p class="pick-lead">先選相框再拍照，四格拍貼和作伙碰拳會有拍照引導</p>
+    <div class="pick-grid" id="pickGrid" role="list"></div>
+  </section>
+
+  <section class="screen brief" id="scrBrief" hidden>
+    <div class="topbar">
+      <button class="icon" id="btnBriefBack" type="button">‹ 返回</button>
+      <span class="ttl" id="briefTitle">拍照引導</span>
+      <span class="icon" aria-hidden="true"></span>
+    </div>
+    <div class="brief-card">
+      <img class="brief-img" id="briefImg" alt="拍照引導示意">
+      <p class="brief-step" id="briefStep"></p>
+      <p class="brief-text" id="briefText"></p>
+    </div>
+    <button class="btn primary" id="btnBriefGo" type="button">開啟相機</button>
+    <button class="btn ghost" id="btnBriefAlbum" type="button">從相簿選這張</button>
+  </section>
+
+  <section class="screen studio" id="scrStudio" hidden>
+    <div class="topbar">
+      <button class="icon" id="btnBack" type="button">‹ 返回</button>
+      <span class="ttl" id="studioTitle">拍照</span>
+      <button class="icon" id="btnTimer" type="button" aria-label="倒數計時">倒數 關</button>
+    </div>
+    <div class="stage" id="stage">
+      <video id="video" playsinline muted autoplay></video>
+      <div class="tint" id="tint"></div>
+      <div class="vig" id="vig"></div>
+      <canvas id="shotLayer" width="1080" height="1350"></canvas>
+      <canvas id="frameLayer" width="1080" height="1350"></canvas>
+      <p class="pose" id="pose" hidden></p>
+      <div class="guide" id="guide" hidden><span id="guideLbl"></span></div>
+      <img class="result" id="result" alt="合成好的照片" hidden>
+      <canvas class="edit" id="editCv" width="1080" height="1350" hidden></canvas>
+      <div class="stk-layer" id="stkLayer" hidden></div>
+      <p class="adj-hint" id="adjHint" hidden>單指拖曳移動、雙指縮放照片</p>
+      <div class="countdown" id="countdown" hidden></div>
+      <div class="flash" id="flash"></div>
+      <div class="busy" id="busy" hidden>處理中…</div>
+    </div>
+    <div class="picker">
+      <div class="tabs" role="tablist" aria-label="效果">
+        <button type="button" role="tab" id="tabFrame" aria-selected="true" aria-controls="frameChips">相框</button>
+        <button type="button" role="tab" id="tabFilter" aria-selected="false" aria-controls="filterChips">濾鏡</button>
+        <button type="button" role="tab" id="tabSticker" aria-selected="false" aria-controls="stkPanel" hidden>貼紙</button>
+      </div>
+      <div class="chips thumbs" id="frameChips" role="radiogroup" aria-label="相框"></div>
+      <div class="chips thumbs" id="filterChips" role="radiogroup" aria-label="濾鏡" hidden></div>
+      <div class="stk-panel" id="stkPanel" hidden>
+        <div class="stk-bar">
+          <div class="stk-cats" role="tablist" aria-label="貼紙分類">
+            <button type="button" role="tab" data-cat="word" aria-selected="true">吉祥話</button>
+            <button type="button" role="tab" data-cat="icon" aria-selected="false">小圖</button>
+          </div>
+          <button type="button" class="stk-clear" id="stkClear" hidden>清除全部</button>
+          <button type="button" class="stk-done" id="stkDone">完成</button>
+        </div>
+        <div class="stk-grid" id="stkGrid"></div>
+        <p class="stk-tip" id="stkTip">點貼紙加到照片上・拖曳移動・雙指或拉圓點縮放旋轉</p>
+      </div>
+    </div>
+
+    <div class="dock" id="dockLive">
+      <button class="round" id="btnAlbum2" type="button">相簿</button>
+      <button class="shutter" id="btnShutter" type="button" aria-label="拍照"></button>
+      <button class="round flip" id="btnFlip" type="button" aria-label="切換前後鏡頭"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a3 3 0 0 1 5-1.5l.8.8M14.5 15.5a3 3 0 0 1-5 1.5l-.8-.8"/><path d="M15.3 10v1.8h-1.8M8.7 18v-1.8h1.8"/></svg><span id="flipLbl">換後鏡頭</span></button>
+    </div>
+
+    <div class="still" id="dockStill" hidden>
+      <button class="btn primary" id="btnMore" type="button" hidden>繼續拍第 2 張</button>
+      <div class="adj-bar" id="adjBar" hidden>
+        <button class="btn ghost small" id="btnAdj" type="button">調整照片位置</button>
+        <label class="adj-zoom" id="adjZoomWrap" hidden><span aria-hidden="true">－</span><input type="range" id="adjZoom" min="100" max="300" value="100" aria-label="放大縮小照片"><span aria-hidden="true">＋</span></label>
+      </div>
+      <p class="save-hint" id="saveHint">長按上方照片，也可以直接存到手機</p>
+      <div class="row">
+        <button class="btn primary" id="btnShare" type="button">分享／下載</button>
+        <button class="btn ghost" id="btnRetake" type="button">重拍</button>
+      </div>
+      <div class="upload-card">
+        <div class="cast-note">
+          <span class="cast-ic" aria-hidden="true"></span>
+          <p><b>上傳後會立即投影在現場大螢幕</b>全場都看得到照片和署名，請確認照片沒問題再上傳。</p>
+        </div>
+        <label for="nameInput">署名（選填，會顯示在大螢幕上）</label>
+        <div class="row" id="upRow">
+          <input id="nameInput" maxlength="12" autocomplete="off" placeholder="例如：小美和家人">
+          <button class="btn gold" id="btnUpload" type="button">上傳到大螢幕</button>
+        </div>
+        <div class="up-confirm" id="upConfirm" hidden>
+          <p>確定要投影到大螢幕嗎？</p>
+          <div class="row">
+            <button class="btn gold" id="btnUploadYes" type="button">確定上傳</button>
+            <button class="btn ghost" id="btnUploadNo" type="button">再想想</button>
+          </div>
+        </div>
+        <p class="status" id="upStatus" role="status"></p>
+      </div>
+    </div>
+  </section>
+
+  <input type="file" id="filePick" accept="image/*" hidden>
+  <input type="file" id="fileCam" accept="image/*" capture="user" hidden>
+</div>
+
+<script src="config.js"></script>
+<script src="words.js"></script>
+<script src="render.js"></script>
+<script src="booth.js"></script>
+<script type="module" src="store-firebase.js"></script>
+</body>
+</html>
