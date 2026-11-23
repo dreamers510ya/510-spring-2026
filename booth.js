@@ -278,7 +278,8 @@
   $("ansInput").addEventListener("keydown", e => { if (e.key === "Enter") sendAnswer(); });
   $("btnAnsBack").addEventListener("click", () => show("home"));
   $("btnAnsPhoto").addEventListener("click", () => openPick("camera"));
-  whenStore().then(st => { if (st.watchControl) st.watchControl(onControl); });
+  // 只訂閱「公開題目」小文件：控台換簡報頁、切畫面不會讓所有手機重新讀取
+  whenStore().then(st => { if (st.watchPublic) st.watchPublic(onControl); else if (st.watchControl) st.watchControl(onControl); });
 
   // ---------- 貼紙：拍完後可加多張，拖曳移動、雙指或圓點縮放旋轉 ----------
   const STICKERS = [

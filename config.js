@@ -53,9 +53,11 @@ window.PB_CONFIG = window.PB_CONFIG || {
 
   // Firebase 設定（依部署手冊第 2 步，從 Firebase 主控台複製貼上）
   firebase: {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAxLZt7SmFUNPatlVFDxexr-RnFQkP2ARg",
+    authDomain: "dream510-spring-2026.firebaseapp.com",
+    projectId: "dream510-spring-2026",
+    storageBucket: "dream510-spring-2026.firebasestorage.app",
+    messagingSenderId: "820410477964",
+    appId: "1:820410477964:web:eec5b886cbce2fc0d73aa9"
   }
 };

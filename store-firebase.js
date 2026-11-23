@@ -1,7 +1,7 @@
-/* 照片資料庫：Firebase Firestore（來賓不需登入；主持人控制台需用工作人員 Google 帳號登入） */
+/* 照片資料庫：Firebase Firestore（來賓不需登入；投影畫面與控制台用控台帳號登入） */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc, serverTimestamp, query, where, orderBy, onSnapshot
+  getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc, serverTimestamp, query, where, orderBy, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -14,7 +14,15 @@ let db = null, col = null, auth = null;
 if (configured) {
   try {
     const app = initializeApp(fb);
-    db = getFirestore(app);
+    // 投影畫面與控制台：開啟本機暫存。照片存在這台電腦，重新整理（30 分鐘內）只讀新增或變動的資料，省免費額度也恢復得快
+    // 來賓手機只讀一份很小的題目文件，不需要暫存
+    const isStaffPage = /(?:wall|console)\.html$/i.test(location.pathname);
+    if (isStaffPage) {
+      try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+      catch (e) { console.warn("本機暫存無法開啟，改用一般模式", e); db = getFirestore(app); }
+    } else {
+      db = getFirestore(app);
+    }
     col = collection(db, "events", cfg.eventId, "photos");
     auth = getAuth(app);
   } catch (e) { console.error(e); }
@@ -22,6 +30,8 @@ if (configured) {
 const ok = !!col;
 const controlRef = () => doc(db, "events", cfg.eventId, "control", "state");
 const presenceRef = () => doc(db, "events", cfg.eventId, "control", "presence");
+const publicRef = () => doc(db, "events", cfg.eventId, "control", "public");
+const PUB_KEYS = ["questions", "activeQ", "cloudOpen", "blocked"];
 
 window.PBStore = {
   ready: Promise.resolve(ok),
@@ -102,6 +112,14 @@ window.PBStore = {
   async setControl(patch) {
     if (!ok) throw new Error(this.notReadyMsg);
     await setDoc(controlRef(), patch, { merge: true });
+    // 來賓手機只需要文字雲題目：另存一份小文件，換簡報頁、切畫面時不會讓上千支手機重新讀取（省免費額度）
+    const pub = {};
+    for (const k of PUB_KEYS) if (k in patch) pub[k] = patch[k];
+    if (Object.keys(pub).length) await setDoc(publicRef(), pub, { merge: true });
+  },
+  watchPublic(cb) {
+    if (!ok) { cb({}); return () => {}; }
+    return onSnapshot(publicRef(), s => cb(s.exists() ? s.data() : {}), () => cb({}));
   },
   heartbeat(info) {
     if (!ok) return;
